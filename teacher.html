@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard</title>
+    <link rel="stylesheet" href="teacher.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+         /* Password Form CSS */
+      #password-form {
+        display: none;
+        position: fixed;
+        top: 30%;
+        left: 85%;
+        transform: translate(-50%, -50%) scale(0);
+        background: #fff;
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease;
+        z-index: 999;
+        width: 300px;
+      }
+
+      #password-form .button-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px; /* Adds space between buttons */
+        margin-top: 10px; /* Space above buttons */
+      }
+
+      #password-form.show {
+        display: block;
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      #password-form input {
+        width: 90%;
+        margin-bottom: 10px;
+        padding: 7px;
+      }
+
+      #password-form button {
+        width: 50%;
+        padding: 8px;
+        background: #154661;
+        color: white;
+        border: none;
+        cursor: pointer;
+        text-align: center;
+        border-radius: 5px;
+        font-weight: bold;
+      }
+
+      #password-form h3 {
+        margin-bottom: 10px;
+      }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="header-info">
+          <header class="portal-heading">
+            <i class="fa fa-user-graduate"></i>
+            <span>Teacher Portal</span>
+          </header>
+          <div class="info">
+            <h2 id='name'>Teacher Name</h2>
+            <p>Email: <span id='email'></span></p>
+          </div>
+        </div>
+        <nav>
+          <a href="teacher.html"><i class="fa-solid fa-house"></i> Dashboard</a>
+          <a href="class.html"><i class="fa-solid fa-landmark"></i> Class Management </a>
+          <a href="Tstudy.html"><i class="fa-solid fa-file"></i> Study Material</a>
+          <a href="index.html" id="signout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out</a>
+        </nav>
+    </div>
+    <div class="main-content">
+            <div class="dashboard-header">
+                <h1>Teacher Dashboard</h1>
+                <div class="dashboard-header-icon">
+                    <a href="#" onclick="openPasswordForm()"><i class="fa fa-ellipsis-v" aria-hidden="true"></i></a>
+                </div>
+            </div>
+        <div class="card-container">
+            <div class="card">
+                <h3>Total Students</h3>
+                <h1 id="total-students">0</h1>
+            </div>
+            <div class="card">
+                <h3>Active Courses</h3>
+                <h1 id="active-courses">0</h1>
+            </div>
+            <div class="card">
+                <h3>Pending Assignments</h3>
+                <h1 id="pending-assignments">0</h1>
+            </div>
+        </div>
+
+        <!-- Graph Section -->
+        <div class="graph-container">
+            <h3>Class Performance Overview</h3>
+            <label for="classSelect">Select Class:</label>
+            <select id="classSelect" class="dropdown" onchange="updateGraphData()">
+            </select>
+
+            <!-- Dropdown for graph type selection -->
+            <label for="graphType">Select Graph Type:</label>
+            <select id="graphType" class="dropdown" onchange="updateGraphData()">
+                <option value="bar">Bar Graph</option>
+                <option value="line">Line Graph</option>
+                <option value="pie">Pie Chart</option>
+            </select>
+
+            <canvas id="myChart"></canvas>
+        </div>
+
+        <div class="recent-activity">
+            <h3>Recent Activity</h3>
+            <ul id="activity-list">
+            </ul>
+        </div>
+        <div id="password-form">
+            <h3>Change Password</h3>
+        
+             <!-- Close Button -->
+
+        <input type="email" id="email-input" placeholder="Email" readonly />
+        <input
+          type="password"
+          id="current-password"
+          placeholder="Current Password"
+        />
+        <input type="password" id="new-password" placeholder="New Password" />
+        <div class="button-container">
+            <button onclick="changePassword()">Change Password</button>
+        <button
+          onclick="closePasswordForm()"
+          style="background: rgb(179, 157, 157); margin-bottom: 10px">
+          Close
+        </button>
+        </div>
+      </div>
+    </div>
+
+<script>
+let teacherData = {};  // To store fetched data
+let chartInstance = null;  // Store chart instance for updating
+
+async function fetchTeacherData() {
+    const email = localStorage.getItem("email");
+    if (!email) {
+        // No email means user is not logged in, redirect to index
+        window.location = "index.html";
+
+        return;
+    }
+    console.log(localStorage.getItem("email"))
+    
+    // Add event listener to sign out button
+    const signoutButton = document.getElementById("signout");
+    if (signoutButton) {
+        signoutButton.addEventListener("click", function() {
+            localStorage.clear(); // Clear all local storage
+            window.location.replace("index.html");
+            console.log(localStorage.getItem("email"))
+            // No need for reload after replace
+        });
+    } else {
+        console.error("Sign out button not found!");
+    }
+
+    try {
+        const response = await fetch(`http://localhost:3000/teacher`);
+        teacherData = await response.json();
+        
+        document.getElementById('name').textContent = teacherData.name;
+        document.getElementById('email').textContent = teacherData.email;
+        document.getElementById('total-students').textContent = teacherData.total_students;
+        document.getElementById('active-courses').textContent = teacherData.active_courses;
+        document.getElementById('pending-assignments').textContent = teacherData.pending_assignments;
+
+        // Populate the class select dropdown
+        const classSelect = document.getElementById('classSelect');
+        teacherData.sections.forEach(section => {
+            const option = document.createElement('option');
+            option.value = `${section.section_name}-${section.semester}`;
+            option.textContent = `${section.section_name} (Sem ${section.semester})`;
+            classSelect.appendChild(option);
+        });
+
+        // Populate recent activity
+        const activityList = document.getElementById('activity-list');
+        teacherData.activities.forEach(activity => {
+            const li = document.createElement('li');
+                    li.innerHTML = `
+                        <span class="icon">📂</span> 
+                        <a href="${activity.file_path}" target="_blank">${activity.type} - ${activity.name}</a>
+                        <span class="time">${activity.date}</span>`;
+                    activityList.appendChild(li);
+        });
+
+        // Set initial graph data if sections are available
+        if (teacherData.sections.length > 0) {
+            updateGraphData();
+        }
+    } catch (error) {
+        console.error("Error fetching teacher data:", error);
+    }
+}
+
+function updateGraphData() {
+    const selectedClass = document.getElementById('classSelect').value;
+    const selectedGraphType = document.getElementById('graphType').value;
+
+    if (!selectedClass || !teacherData.class_performance[selectedClass]) return;
+
+    const sectionData = teacherData.class_performance[selectedClass];
+
+    // Destroy previous chart instance if exists
+    if (chartInstance) {
+        chartInstance.destroy();
+    }
+
+    const ctx = document.getElementById('myChart').getContext('2d');
+
+    chartInstance = new Chart(ctx, {
+        type: selectedGraphType,
+        data: {
+            labels: ['Periodical 1', 'Assignment 1', 'Periodical 2', 'Assignment 2'],
+            datasets: [{
+                label: 'Performance',
+                data: [
+                    sectionData.periodical1,
+                    sectionData.assignment1,
+                    sectionData.periodical2,
+                    sectionData.assignment2
+                ],
+                backgroundColor: selectedGraphType === 'pie' 
+                    ? ['#3498db', '#e74c3c', '#2ecc71', '#9b59b6'] 
+                    : ['rgba(52, 152, 219, 0.6)', 'rgba(231, 76, 60, 0.6)', 'rgba(46, 204, 113, 0.6)', 'rgba(155, 89, 182, 0.6)'],
+                borderColor: selectedGraphType === 'pie' 
+                    ? ['#2980b9', '#c0392b', '#27ae60', '#8e44ad'] 
+                    : ['rgba(52, 152, 219, 1)', 'rgba(231, 76, 60, 1)', 'rgba(46, 204, 113, 1)', 'rgba(155, 89, 182, 1)'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: selectedGraphType === 'pie' ? {} : {
+                y: {
+                    beginAtZero: true,
+                    max: 10,
+                    ticks: { stepSize: 1 }
+                }
+            }
+        }
+    }); 
+}
+function openPasswordForm() {
+            document.getElementById("password-form").classList.add("show");
+            document.getElementById('email-input').value = document.getElementById('email').innerText;
+        }
+
+        function closePasswordForm() {
+            document.getElementById("password-form").classList.remove("show");
+        }
+
+        function changePassword() {
+            const email = document.getElementById('email-input').value;
+            const currentPassword = document.getElementById("current-password").value;
+            const newPassword = document.getElementById("new-password").value;
+
+            if (!currentPassword || !newPassword) {
+                alert("Please fill all fields properly.");
+                return;
+            }
+
+            fetch("http://localhost:3000/teacher/change-password", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({   email, currentPassword, newPassword })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Password Updated Successfully");
+                        closePasswordForm();
+                    } else {
+                        alert(data.error || "Something went wrong");
+                    }
+                })
+                .catch(err => {
+                    console.error("Error:", err);
+                    alert("Server Error");
+                });
+        }
+
+
+window.onload = fetchTeacherData;
+</script>
+
+</body>
+</html>

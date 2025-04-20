@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Performance</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+      body {
+        font-family: "Poppins", sans-serif;
+        margin: 0;
+        display: flex;
+        height: 100vh;
+        background-color: #f4f4f4;
+      }
+
+      /* Sidebar Styling */
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 300px;
+        background: linear-gradient(135deg, #1a1a2e, #0f3460);
+        color: white;
+        padding: 20px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .header-info {
+        /* Container for header and student info */
+        margin-bottom: 20px;
+      }
+
+      .portal-heading {
+        display: flex;
+        align-items: center;
+        font-size: 22px;
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+
+      .portal-heading i {
+        margin-right: 10px;
+        font-size: 16px;
+        color: #f1c40f; /* Gold color for icon */
+        border: 2px solid #f1c40f; /* Gold ring */
+        border-radius: 50%;
+        padding: 5px;
+      }
+
+      .info h2 {
+        margin: 0 0 8px 0;
+        font-size: 18px;
+        font-weight: 600;
+        color: #ccc;
+      }
+
+      .info p {
+        margin: 5px 0;
+        font-size: 14px;
+        color: #ccc;
+      }
+
+      .sidebar nav a {
+        display: block;
+        padding: 10px 8px;
+        margin: 10px 0;
+        border-radius: 5px;
+        color: white;
+        text-decoration: none;
+        font-size: 16px;
+        transition: background 0.3s;
+      }
+
+      .sidebar nav a i {
+        margin-right: 10px;
+        color: #f1c40f;
+        width: 12px;
+        text-align: center;
+      }
+
+      .sidebar nav a:hover {
+        background: rgb(201, 200, 200, 0.1);
+      }
+
+      .dashboard-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+
+      .dashboard-header h1 {
+        margin: 0;
+        font-size: 25px;
+        font-weight: 600;
+        color: #2c3e50;
+      }
+
+      /* Header Icons */
+      .dashboard-header-icons {
+        display: flex;
+        align-items: center;
+        gap: 36px;
+      }
+
+      /* Individual Icons */
+      .dashboard-header-icons a i {
+        font-size: 22px;
+        color: #07090b;
+        cursor: pointer;
+      }
+
+      /* Main Content */
+      .main-content {
+        margin-left: 320px; /* Sidebar width (300px) + gap (20px) */
+        padding: 20px;
+        flex: 1;
+        overflow-y: auto;
+      }
+
+      .main-content h1 {
+        color: #2c3e50;
+        font-size: 28px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        margin-top: 2px;
+      }
+
+      h1,
+      h2,
+      h3 {
+        color: #1c2541;
+      }
+
+      .graph-controls {
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+      }
+
+      .graph-container {
+        width: 96%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      }
+      .student-list {
+        margin-top: 20px;
+        background: white;
+        padding: 10px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .student-list ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      /* .student-list li {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            cursor: pointer;
+        } */
+
+      canvas {
+        max-width: 90%;
+        height: 400px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: center;
+      }
+      th {
+        background-color: #f4f4f4;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar">
+      <div class="header-info">
+        <header class="portal-heading">
+          <i class="fa fa-user-graduate"></i>
+          <span>Admin Portal</span>
+        </header>
+      </div>
+      <nav>
+        <a href="admin.html"><i class="fa-solid fa-house"></i> Dashboard</a>
+        <a href="useradmin.html"
+          ><i class="fa-solid fa-user"></i> User Managemnet</a
+        >
+        <a href="course.html"
+          ><i class="fa-solid fa-book-open"></i> Course Managemnet</a
+        >
+        <a href="index.html" id="signout"
+          ><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out</a
+        >
+      </nav>
+    </div>
+
+    <div class="main-content">
+      <h1>Performance</h1>
+
+      <div class="graph-controls">
+        <label for="graphType">Select Graph Type:</label>
+        <select id="graphType">
+          <option value="bar">Bar Chart</option>
+          <option value="line">Line Chart</option>
+          <option value="pie">Pie Chart</option>
+        </select>
+
+        <label for="courseSelect">Select Course:</label>
+        <select id="courseSelect"></select>
+
+        <label for="sectionSelect">Select Section:</label>
+        <select id="sectionSelect"></select>
+
+        <label for="yearSelect">Select Year:</label>
+        <select id="yearSelect"></select>
+      </div>
+
+      <div class="graph-container">
+        <canvas id="performanceChart"></canvas>
+      </div>
+      <div class="student-list">
+        <h2>Student List</h2>
+        <table id="studentTable">
+          <thead>
+            <tr>
+              <th>S.No</th>
+              <th>Name</th>
+              <th>Roll No</th>
+              <th>ID</th>
+              <th>Assignment 1</th>
+              <th>Periodical 1</th>
+              <th>Assignment 2</th>
+              <th>Periodical 2</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Student data will be inserted here dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const ctx = document
+          .getElementById("performanceChart")
+          .getContext("2d");
+        let chartType = "bar";
+        let performanceChart;
+
+        function fetchDropdownData() {
+          fetch("http://localhost:3000/getDropdownData")
+            .then((response) => response.json())
+            .then((data) => {
+              populateDropdown("courseSelect", data.courses);
+              populateDropdown("sectionSelect", data.sections);
+              populateYearDropdown("yearSelect", data.years);
+            })
+            .catch((error) =>
+              console.error("Error fetching dropdown data:", error)
+            );
+        }
+
+        function populateDropdown(dropdownId, options) {
+          const dropdown = document.getElementById(dropdownId);
+          dropdown.innerHTML = "<option value=''>Select</option>"; // Default "Select" option
+          options.forEach((option) => {
+            let opt = document.createElement("option");
+            opt.value = option;
+            opt.textContent = option;
+            dropdown.appendChild(opt);
+          });
+        }
+
+        function populateYearDropdown(dropdownId, options) {
+          const dropdown = document.getElementById(dropdownId);
+          dropdown.innerHTML = "<option value=''>Select</option>"; // Default "Select" option
+          options.forEach((option) => {
+            let opt = document.createElement("option");
+            opt.value = option.split(" ")[1]; // "Year 2" -> "2"
+            opt.textContent = option;
+            dropdown.appendChild(opt);
+          });
+        }
+
+        function fetchGraphData() {
+          const course = document.getElementById("courseSelect").value;
+          const section = document.getElementById("sectionSelect").value;
+          const current_year = document.getElementById("yearSelect").value;
+
+          if (!course || !section || !current_year) {
+            console.error("Missing parameters", {
+              course,
+              section,
+              current_year,
+            });
+            return;
+          }
+
+          fetch(
+            `http://localhost:3000/getGraphData?course=${encodeURIComponent(
+              course
+            )}&section=${encodeURIComponent(
+              section
+            )}&current_year=${encodeURIComponent(current_year)}`
+          )
+            .then((response) => response.json())
+            .then((data) => {
+              updateChart(data);
+            })
+            .catch((error) =>
+              console.error("Error fetching graph data:", error)
+            );
+        }
+
+        function fetchStudentList() {
+          const course = document.getElementById("courseSelect").value;
+          const section = document.getElementById("sectionSelect").value;
+          const current_year = document.getElementById("yearSelect").value;
+
+          if (!course || !section || !current_year) {
+            console.error("Missing parameters", {
+              course,
+              section,
+              current_year,
+            });
+            return;
+          }
+
+          fetch(
+            `http://localhost:3000/getStudents?course=${encodeURIComponent(
+              course
+            )}&section=${encodeURIComponent(
+              section
+            )}&current_year=${encodeURIComponent(current_year)}`
+          )
+            .then((response) => response.json())
+            .then((data) => {
+              const studentList = document.getElementById("studentTable");
+              const tbody = studentTable.querySelector("tbody");
+              tbody.innerHTML = ""; // Purana data hatao
+
+              data.students.forEach((student, index) => {
+                let row = tbody.insertRow();
+                row.insertCell(0).textContent = index + 1; // Serial Number
+                row.insertCell(1).textContent = student.name; // Name
+                row.insertCell(2).textContent = student.Roll_NO; // Roll No
+                row.insertCell(3).textContent = student.ID; // ID
+                row.insertCell(4).textContent = student.Assignment1_Avg;
+                row.insertCell(5).textContent = student.Periodical1_Avg;
+                row.insertCell(6).textContent = student.Assignment2_Avg;
+                row.insertCell(7).textContent = student.Periodical2_Avg;
+              });
+            })
+            .catch((error) =>
+              console.error("Error fetching student list:", error)
+            );
+        }
+
+        function updateChart(data) {
+          if (performanceChart) {
+            performanceChart.destroy();
+          }
+          performanceChart = new Chart(ctx, {
+            type: chartType,
+            data: {
+              labels: [
+                "Assignment 1",
+                "Periodical 1",
+                "Assignment 2",
+                "Periodical 2",
+              ],
+              datasets: [
+                {
+                  label: "Average Marks",
+                  data: data.marks,
+                  backgroundColor: ["#3498db", "#2ecc71", "#e74c3c", "#f1c40f"],
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+            },
+          });
+        }
+
+        document
+          .getElementById("graphType")
+          .addEventListener("change", function () {
+            chartType = this.value;
+            fetchGraphData();
+          });
+
+        // **Dropdown change hone par functions call karna**
+        document
+          .getElementById("courseSelect")
+          .addEventListener("change", () => {
+            fetchGraphData();
+            fetchStudentList();
+          });
+
+        document
+          .getElementById("sectionSelect")
+          .addEventListener("change", () => {
+            fetchGraphData();
+            fetchStudentList();
+          });
+
+        document.getElementById("yearSelect").addEventListener("change", () => {
+          fetchGraphData();
+          fetchStudentList();
+        });
+
+        fetchDropdownData();
+      });
+    </script>
+  </body>
+</html>

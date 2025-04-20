@@ -1,0 +1,212 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+body {
+  font-family: "Poppins", sans-serif;
+  margin: 0;
+  display: flex;
+  height: 100vh;
+  background-color: #f4f4f4;
+}
+
+/* Sidebar Styling */
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 300px;
+  background: linear-gradient(135deg, #1a1a2e, #0f3460);
+  color: white;
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.header-info {
+  /* Container for header and student info */
+  margin-bottom: 20px;
+}
+
+.portal-heading {
+  display: flex;
+  align-items: center;
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.portal-heading i {
+  margin-right: 10px;
+  font-size: 16px;
+  color: #f1c40f; /* Gold color for icon */
+  border: 2px solid #f1c40f; /* Gold ring */
+  border-radius: 50%;
+  padding: 5px;
+}
+
+.info h2 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #ccc;
+}
+
+.info p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #ccc;
+}
+
+.sidebar nav a {
+  display: block;
+  padding: 10px 8px;
+  margin: 10px 0;
+  border-radius: 5px;
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  transition: background 0.3s;
+}
+
+.sidebar nav a i {
+  margin-right: 10px;
+  color: #f1c40f;
+  width: 12px;
+  text-align: center;
+}
+
+.sidebar nav a:hover {
+  background: rgb(201, 200, 200, 0.1);
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  font-size: 25px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* Header Icons */
+.dashboard-header-icons {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+}
+
+/* Individual Icons */
+.dashboard-header-icons a i {
+  font-size: 22px;
+  color: #07090b;
+  cursor: pointer;
+}
+
+/* Main Content */
+.main-content {
+  margin-left: 320px; /* Sidebar width (300px) + gap (20px) */
+  padding: 20px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.main-content h1 {
+  color: #2c3e50;
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  margin-top: 2px;
+}
+
+
+/* Recent Materials */
+.recent-materials {
+  margin-bottom: 30px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.upload-new {
+  background-color: #1e90ff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.material-list {
+  list-style: none;
+  padding: 0;
+}
+
+.material-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  flex: 1;
+}
+
+.view-all-container {
+  text-align: left;
+  margin-top: 10px;
+}
+
+.view-all-btn {
+  background-color: #dcdde1;
+  color: #2c3e50;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.view-all-btn:hover {
+  background-color: #999a9c;
+}
+
+.progress-bar {
+  background-color: #ddd;
+  height: 10px;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.progress-bar .used {
+  background-color: #1e90ff;
+  height: 100%;
+}
+
+h1,
+h2,
+h3 {
+  color: #1c2541;
+}

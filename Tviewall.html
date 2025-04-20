@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teacher Portal - Study Materials</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="Tstudy.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="header-info">
+        <header class="portal-heading">
+          <i class="fa fa-user-graduate"></i>
+          <span>Teacher Portal</span>
+        </header>
+        <div class="info">
+          <h2 id='teacher-name'>Teacher Name</h2>
+          <p>Email: <span id='teacher-email'></span></p>
+        </div>
+      </div>
+      <nav>
+        <a href="teacher.html"><i class="fa-solid fa-house"></i> Dashboard</a>
+        <a href="class.html"><i class="fa-solid fa-landmark"></i> Class Management </a>
+        <a href="Tstudy.html"><i class="fa-solid fa-file"></i> Study Material</a>
+        <a href="index.html" id="signout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out</a>
+      </nav>
+  </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <header>
+        <h1>Materials</h1>
+      </header>
+
+      <!-- Recent Materials Section -->
+      <section class="recent-materials">
+        <div class="section-header">
+          <h2>Posted Materials</h2>
+          
+        </div>
+        <ul class="material-list" id="study-materials-list">
+          <p>Loading study materials...</p>
+        </ul>
+        
+      </section>
+    </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const email = localStorage.getItem("email");
+    if (!email) {
+        // No email means user is not logged in, redirect to index
+        window.location = "index.html";
+
+        return;
+    }
+    console.log(localStorage.getItem("email"))
+    
+    // Add event listener to sign out button
+    const signoutButton = document.getElementById("signout");
+    if (signoutButton) {
+        signoutButton.addEventListener("click", function() {
+            localStorage.clear(); // Clear all local storage
+            window.location.replace("index.html");
+            console.log(localStorage.getItem("email"))
+            // No need for reload after replace
+        });
+    } else {
+        console.error("Sign out button not found!");
+    }
+        fetch(`http://localhost:3000/teacherstudy`)
+            .then(response => response.json())
+            .then(data => {
+                // Populate sidebar with teacher details
+                document.getElementById("teacher-name").innerText = data.teacher.name;
+                document.getElementById("teacher-email").innerText = data.teacher.email;
+
+                // Function to format date (YYYY-MM-DD)
+                function formatDate(dateString) {
+                    return new Date(dateString).toISOString().split('T')[0];
+                }
+
+                // Populate recent study materials
+                const studyList = document.getElementById("study-materials-list");
+                studyList.innerHTML = "";
+                if (data.allstudyMaterials.length > 0) {
+                    data.allstudyMaterials.forEach(material => {
+                        studyList.innerHTML += `
+                            <li>
+                                <div class="file-info">
+                                    <div>
+                                        <h3><a href="${material.file_path}" target="_blank" style="color: black; text-decoration: none;">${material.title}</a></h3>
+                                        <p><strong>Subject:</strong> ${material.subject_name}</p>
+                                        <p><strong>Section:</strong> ${material.section_name}</p>
+                                        <p><strong>Semester:</strong> ${material.semester}</p>
+                                        <p><strong>Uploaded Date:</strong> ${formatDate(material.uploaded_date)}</p>
+                                        
+                                    </div>
+                                </div>
+                            </li>
+                        `;
+                    });
+                } else {
+                    studyList.innerHTML = "<p>No study materials uploaded yet.</p>";
+                }
+
+                
+            })
+            .catch(error => console.error("Error fetching data:", error));
+    });
+
+    
+
+    
+  </script>
+</body>
+</html>

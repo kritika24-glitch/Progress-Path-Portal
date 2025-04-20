@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Dashboard</title>
+
+    <!-- Link to CSS -->
+    <link rel="stylesheet" href="stt.css" />
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+       /* Password Form CSS */
+       #password-form {
+        display: none;
+        position: fixed;
+        top: 30%;
+        left: 85%;
+        transform: translate(-50%, -50%) scale(0);
+        background: #fff;
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease;
+        z-index: 999;
+        width: 300px;
+      }
+
+      #password-form .button-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px; /* Adds space between buttons */
+        margin-top: 10px; /* Space above buttons */
+      }
+
+      #password-form.show {
+        display: block;
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      #password-form input {
+        width: 90%;
+        margin-bottom: 10px;
+        padding: 7px;
+      }
+
+      #password-form button {
+        width: 50%; /* Adjust width for a better look */
+        padding: 8px;
+        background: #154666;
+        color: white;
+        border: none;
+        cursor: pointer;
+        text-align: center;
+        border-radius: 5px;
+        font-weight: bold;
+      }
+
+      #password-form h3 {
+        margin-bottom: 10px;
+      }
+    </style>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const email = localStorage.getItem("email");
+    if (!email) {
+        // No email means user is not logged in, redirect to index
+        window.location = "index.html";
+
+        return;
+    }
+    console.log(localStorage.getItem("email"))
+    
+    // Add event listener to sign out button
+    const signoutButton = document.getElementById("signout");
+    if (signoutButton) {
+        signoutButton.addEventListener("click", function() {
+            localStorage.clear(); // Clear all local storage
+            window.location.replace("index.html");
+            console.log(localStorage.getItem("email"))
+            // No need for reload after replace
+        });
+    } else {
+        console.error("Sign out button not found!");
+    }
+
+            fetch(`http://localhost:3000/student`)
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.error) {
+                        alert(data.error);
+                        return;
+                    }
+
+                    document.getElementById("student-name").innerText = data.name;
+                    document.getElementById("student-section").innerText = data.section;
+                    document.getElementById("student-branch").innerText = data.branch;
+                    document.getElementById("student-email").innerText = data.email;
+                    document.getElementById("student-roll").innerText = data.roll_number;
+
+                    document.getElementById("credit-points").innerText = data.credit_points;
+                    document.getElementById("total-courses").innerText = data.courses;
+                    document.getElementById("total-assignments").innerText = data.total_assignments;
+
+                    renderGraph(data.graph_data);
+                    updateRecentActivities(data.recent_activities);
+
+                    document.getElementById("graphType").addEventListener("change", function () {
+                        const selectedType = this.value;
+                        fetch(`http://localhost:3000/student`)
+                            .then((response) => response.json())
+                            .then((data) => {
+                                renderGraph(data.graph_data, selectedType);
+                            })
+                            .catch((error) => console.error("Error fetching graph data:", error));
+                    });
+                })
+                .catch((error) => console.error("Error fetching data:", error));
+        });
+
+        let chartInstance = null;
+        function renderGraph(graphData, selectedType = "bar") {
+            const ctx = document.getElementById("performanceChart").getContext("2d");
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+            chartInstance = new Chart(ctx, {
+                type: selectedType,
+                data: {
+                    labels: ["Assignment 1", "Periodical 1", "Assignment 2", "Periodical 2"],
+                    datasets: [{
+                        label: "Marks",
+                        data: [graphData.assignment_1, graphData.periodical_1, graphData.assignment_2, graphData.periodical_2],
+                        backgroundColor: ["#3498db", "#2ecc71", "#e74c3c", "#f1c40f"]
+                    }]
+                }
+            });
+        }
+
+        function updateRecentActivities(activities) {
+            let activityContainer = document.getElementById("recent-activities");
+            activityContainer.innerHTML = "";
+            if (!activities || activities.length === 0) {
+                activityContainer.innerHTML = "<p>No recent activities found.</p>";
+                return;
+            }
+            activities.forEach((activity) => {
+                let activityItem = document.createElement("li");
+                activityItem.classList.add("activity-item");
+                activityItem.innerHTML = `
+                    <strong>${activity.title}</strong> (${activity.type}) <br>
+                    Uploaded by: ${activity.uploaded_by} <br>
+                    Date: ${new Date(activity.uploaded_date).toLocaleDateString()} <br>
+                    <a href="${activity.file_path}" target="_blank">View File</a>
+                `;
+                activityContainer.appendChild(activityItem);
+            });
+        }
+
+        function openPasswordForm() {
+            document.getElementById("password-form").classList.add("show");
+            document.getElementById("email").value = document.getElementById("student-email").innerText;
+        }
+
+        function closePasswordForm() {
+            document.getElementById("password-form").classList.remove("show");
+        }
+
+        function changePassword() {
+            const email = document.getElementById("email").value;
+            const currentPassword = document.getElementById("current-password").value;
+            const newPassword = document.getElementById("new-password").value;
+
+            if (!currentPassword || !newPassword) {
+                alert("Please fill all fields properly.");
+                return;
+            }
+
+            fetch("http://localhost:3000/student/change-password", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, currentPassword, newPassword })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Password Updated Successfully");
+                        closePasswordForm();
+                    } else {
+                        alert(data.error || "Something went wrong");
+                    }
+                })
+                .catch(err => {
+                    console.error("Error:", err);
+                    alert("Server Error");
+                });
+        }
+    </script>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="header-info">
+            <header class="portal-heading">
+                <i class="fa fa-user-graduate"></i>
+                <span>Student Portal</span>
+            </header>
+            <div class="info">
+                <h2 id="student-name">Student Name</h2>
+                <p>Section: <span id="student-section"></span></p>
+                <p>Branch: <span id="student-branch"></span></p>
+                <p>Email: <span id="student-email"></span></p>
+                <p>Roll Number: <span id="student-roll"></span></p>
+            </div>
+        </div>
+        <nav>
+            <a href="stdnts.html"><i class="fa-solid fa-house"></i> Dashboard</a>
+        <a href="acad.html"><i class="fa-solid fa-book-open"></i> Academic Record</a>
+        <a href="study.html"><i class="fa-solid fa-file"></i> Study Material</a>
+        <a href="index.html" id="signout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out</a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="dashboard-header">
+            <h1>Student Dashboard</h1>
+            <div class="dashboard-header-icon">
+                <a href="notificationstudent.html"
+                ><i
+                    class="fa fa-bell"
+                    style="font-size: 22px; margin-right: 15px; color: black"
+                    aria-hidden="true"
+                ></i
+                ></a>
+             <a href="#" onclick="openPasswordForm()"
+                ><i 
+                class="fa fa-ellipsis-v"
+                style="font-size: 22px; color: black"
+                aria-hidden="true"
+                ></i></a>
+            </div>
+        </div>
+
+        <!-- Summary Section -->
+        <section class="summary">
+            <div class="summary-card">
+                <h3>Credit Points</h3>
+                <p id="credit-points">0</p>
+            </div>
+            <div class="summary-card">
+                <h3>Total Courses</h3>
+                <p id="total-courses">0</p>
+            </div>
+            <div class="summary-card">
+                <h3>Total Assignments</h3>
+                <p id="total-assignments">0</p>
+            </div>
+        </section>
+
+        <!-- Performance Section -->
+        <section class="performance">
+            <h2>Performance</h2>
+            <canvas id="performanceChart" width="400" height="200"></canvas>
+            <label for="graphType">Select Graph Type:</label>
+            <select id="graphType" class="dropdown">
+                <option value="bar">Bar Graph</option>
+                <option value="line">Line Graph</option>
+                <option value="pie">Pie Chart</option>
+            </select>
+        </section>
+
+        <!-- Recent Activities -->
+        <section class="activities">
+            <h2>Recent Activities</h2>
+            <ul id="recent-activities"></ul>
+        </section>
+    </div>
+
+    <div id="password-form">
+      <h3>Change Password</h3>
+  
+     
+      <input type="email" id="email" placeholder="Email" readonly />
+      <input
+        type="password"
+        id="current-password"
+        placeholder="Current Password"
+      />
+      <input type="password" id="new-password" placeholder="New Password" />
+      <div class="button-container">
+        <button onclick="changePassword()">Change Password</button>
+        <button
+          onclick="closePasswordForm()"
+          style="background: rgb(179, 157, 157); margin-bottom: 10px"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </body>
+</html>

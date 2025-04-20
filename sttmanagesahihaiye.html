@@ -1,0 +1,274 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Student  Management</title>
+  <link rel="stylesheet" href="course.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h2>Admin Portal</h2>
+      <a href="admin.html">🏠 Dashboard</a>
+      <a href="course.html">📚 Course Management</a>
+      <a href="teachermanage.html">👩‍🏫 Teacher Management</a>
+      <a href="studentmanage.html" class="active">👩‍🏫 Student  Management</a>
+      <a href="index.html">🚪 Sign Out</a>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <header class="header">
+        <h1>Student  Management</h1>
+      </header>
+
+      <!-- Search & Add Button -->
+      <div class="search-container">
+        <input type="text" id="searchBar" placeholder="Search by  Name Course or ID..." onkeyup="searchCourses()">
+        <button class="add-course-btn" onclick="openAddCourseForm()">➕ Add course </button>
+      </div>
+
+        <!-- 📚 Course List -->
+        <div id="courseList">
+            <h2>Courses</h2>
+            <div id="subjectCards"></div>
+        </div>
+
+        <!-- 📋 Student Table -->
+        <div id="studentTable"></div>
+    </div>
+
+    <!-- ➕ Add Student Modal -->
+    <div id="addStudentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAddStudentForm()">&times;</span>
+            <h2>Add New Student</h2>
+            <input type="text" id="studentName" placeholder="Student Name">
+            <input type="text" id="studentID" placeholder="Student ID">
+            <input type="text" id="rollNo" placeholder="Roll No">
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="password" placeholder="Password">
+            <input type="text" id="section" placeholder="Section">
+            <input type="number" id="semester" placeholder="Semester">
+            <input type="text" id="batch" placeholder="Batch">
+            <input type="text" id="course" readonly>
+
+            <button onclick="addStudent()">Submit</button>
+        </div>
+    </div>
+     <!-- ➕ Add Course Modal -->
+  <div id="addCourseModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeAddCourseForm()">&times;</span>
+        <h2>Add New Course</h2>
+        <input type="text" id="courseName" placeholder="Course Name">
+        <input type="text" id="courseID" placeholder="Course ID">
+
+        <button onclick="addCourse()">Submit</button>
+    </div>
+</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+    fetch('http://localhost:3000/courses')
+        .then(response => response.json())
+        .then(data => {
+            let courseList = document.getElementById('subjectCards');
+            courseList.innerHTML = "";
+
+            data.forEach(course => {
+                let courseDiv = document.createElement('div');
+                courseDiv.classList.add('course-card');
+                courseDiv.innerHTML = `<h3 onclick="showStudents('${course.course}')">${course.course}</h3>`;
+                courseList.appendChild(courseDiv);
+            });
+        })
+        .catch(error => console.error('Error fetching courses:', error));
+});
+
+function showStudents(course) {
+    fetch(`http://localhost:3000/students/${course}`)
+        .then(response => response.json())
+        .then(data => {
+            let studentTable = document.getElementById('studentTable');
+            let tableHTML = `
+                <h2>${course} Students</h2>
+                <button class="add-student-btn" onclick="openAddStudentForm('${course}')">➕ Add Student</button>
+                <table>
+                    <tr>
+                        <th>S.No</th>
+                        <th>Name</th>
+                        <th>ID</th>
+                        <th>Roll No</th>
+                        <th>Email</th>
+                        <th>Password</th>
+                        <th>Section</th>
+                        <th>Semester</th>
+                        <th>Batch</th>
+                        <th>Course</th>
+                    </tr>`;
+
+            data.forEach((student, index) => {
+                tableHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${student.student_name}</td>
+                        <td>${student.student_id}</td>
+                        <td>${student.roll_no}</td>
+                        <td>${student.email}</td>
+                        <td>${student.password}</td>
+                        <td>${student.section}</td>
+                        <td>${student.semester}</td>
+                        <td>${student.batch}</td>
+                        <td>${student.course}</td>
+                    </tr>`;
+            });
+
+            tableHTML += `</table>`;
+            studentTable.innerHTML = tableHTML;
+        })
+        .catch(error => console.error('Error fetching students:', error));
+}
+
+function openAddStudentForm(course) {
+    console.log("Function called with course:", course); // Debugging
+    //document.getElementById('course').value = course;
+    document.getElementById('addStudentModal').style.display = 'block';
+}
+
+function closeAddStudentForm() {
+    document.getElementById('addStudentModal').style.display = 'none';
+}
+
+function addStudent() {
+    let studentData = {
+        student_id: document.getElementById('studentID').value,
+        name: document.getElementById('studentName').value,
+        roll_no: document.getElementById('rollNo').value,
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value,
+        section: document.getElementById('section').value,
+        semester: document.getElementById('semester').value,
+        batch: document.getElementById('batch').value,
+        course: document.getElementById('course').value
+    };
+
+    fetch('http://localhost:3000/addStudent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(studentData)
+    })
+    .then(response => response.json())
+    .then(() => {
+        alert("Student Added Successfully!");
+        location.reload();
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+// // ✅ Add Student Modal
+// function openAddStudentForm(course) {
+//     document.getElementById('course').value = course;
+//     document.getElementById('addStudentModal').style.display = 'block';
+// }
+
+function closeAddStudentForm() {
+    document.getElementById('addStudentModal').style.display = 'none';
+}
+
+// ✅ Add Course Modal
+function openAddCourseForm() {
+    document.getElementById('addCourseModal').style.display = 'block';
+}
+
+function closeAddCourseForm() {
+    document.getElementById('addCourseModal').style.display = 'none';
+}
+
+// ✅ Modal ko bahar click karne par close karna
+window.onclick = function(event) {
+    let studentModal = document.getElementById('addStudentModal');
+    let courseModal = document.getElementById('addCourseModal');
+
+    if (event.target == studentModal) {
+        studentModal.style.display = "none";
+    }
+    if (event.target == courseModal) {
+        courseModal.style.display = "none";
+    }
+}
+
+  
+
+  function addCourse() {
+      let courseData = {
+          course_id: document.getElementById('courseID').value,
+          course_name: document.getElementById('courseName').value
+      };
+
+      fetch('http://localhost:3000/addCourse', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(courseData)
+      })
+      .then(response => response.json())
+      .then(() => {
+          alert("Course Added Successfully!");
+          location.reload();
+      })
+      .catch(error => console.error('Error:', error));
+  }
+
+    </script>
+    <style>
+        .modal {
+          display: none;
+          position: fixed;
+          z-index: 1;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0,0,0,0.4);
+          justify-content: center;
+          align-items: center;
+        }
+        .modal-content {
+          background: white;
+          padding: 20px;
+          border-radius: 5px;
+          text-align: center;
+          width: 50%;
+          margin: auto;
+        }
+        .close {
+          float: right;
+          font-size: 28px;
+          cursor: pointer;
+        }
+        select, input {
+          display: block;
+          width: 100%;
+          margin: 10px 0;
+          padding: 10px;
+        }
+        button {
+          padding: 10px 20px;
+          background: blue;
+          color: white;
+          border: none;
+          cursor: pointer;
+        }
+        .teacher-card {
+          border: 1px solid #ddd;
+          padding: 15px;
+          margin: 10px;
+          border-radius: 5px;
+        }
+        </style>
+    
+</body>
+</html>

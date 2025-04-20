@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Course Management</title>
+  <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+  <link rel="stylesheet" href="course.css">
+</head>
+<body>
+  
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="header-info">
+        <header class="portal-heading">
+          <i class="fa fa-user-graduate"></i>
+          <span>Admin Portal</span>
+        </header>
+      </div>
+      <nav>
+        <a href="admin.html"><i class="fa-solid fa-house"></i> Dashboard</a>
+        <a href="useradmin.html"
+          ><i class="fa-solid fa-user"></i> User Managemnet</a
+        >
+        <a href="course.html"><i class="fa-solid fa-book-open"></i> Course Managemnet</a>
+        <a href="index.html" id="signout"
+          ><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out</a
+        >
+      </nav>
+</div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <header class="header">
+        <h1>User Management</h1>
+      </header>
+      <a href="teachermanage.html">Teacher Management</a>
+      <br>
+      <br>
+
+      <a href="studentmanage.html">Student  Management</a>
+
+      
+    </div> 
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const email = localStorage.getItem("email");
+if (!email) {
+    // No email means user is not logged in, redirect to index
+    window.location = "index.html";
+
+    return;
+}
+console.log(localStorage.getItem("email"))
+
+// Add event listener to sign out button
+const signoutButton = document.getElementById("signout");
+if (signoutButton) {
+    signoutButton.addEventListener("click", function() {
+        localStorage.clear(); // Clear all local storage
+        window.location.replace("index.html");
+        console.log(localStorage.getItem("email"))
+        // No need for reload after replace
+    });
+} else {
+    console.error("Sign out button not found!");
+}
+});
+</script>
+</body>
+</html>

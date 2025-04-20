@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Progress Path Portal</title>
+  <link rel="stylesheet" href="index.css">
+  <style>
+    /* Extra styles for popup */
+    #forgetForm {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        z-index: 9999;
+    }
+
+    #forgetForm button {
+        margin-top: 10px;
+        margin-right: 5px;
+    }
+
+    /* optional: backdrop */
+    #backdrop {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 9998;
+    }
+</style>
+</head>
+<body>
+  <div class="carousel-container">
+    <div class="carousel-slide">
+      <img src="photo-1498243691581-b145c3f54a5a.jpg" alt="Background Image 1">
+      <img src="photo-1523050854058-8df90110c9f1.jpg" alt="Background Image 2">
+      <img src="photo-1523580846011-d3a5bc25702b.jpg" alt="Background Image 3">
+      <img src="photo-1541339907198-e08756dedf3f.jpg" alt="Background Image 4">
+    </div>
+    <div class="carousel-overlay">
+      <header>
+        <img src="Banasthali_Vidyapeeth_Logo.png" alt="Logo" class="logo">
+        <h1 class="portal-title">PROGRESS PATH PORTAL</h1>
+      </header>
+      <div class="login-box">
+        <h2>Welcome Back</h2>
+        <p>Sign in to your account</p>
+        <form id="loginForm">
+          <div class="input-group">
+            <label for="user-type">User Type</label>
+            <select id="user-type" required>
+              <option value="" disabled selected>Select User Type</option>
+              <option value="student">Student</option>
+              <option value="teacher">Teacher</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="Enter your email" required>
+          </div>
+          <div class="input-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter your password" required>
+          </div>
+          <div class="forgot-password">
+            <a href="#"onclick="openForgetForm()">Forgot password?</a>
+          </div>
+          <button type="button" class="btn-signin" onclick="handleLogin()">Sign In</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div id="backdrop" onclick="closeForgetForm()"></div>
+  <div id="forgetForm">
+      <h3>Recover Password</h3>
+      <form action="http://localhost:3000/forget-password" method="POST">
+          <div class="input-group">
+              <label for="userTypeForget">Select User Type</label>
+              <select id="userTypeForget" name="userType" required>
+                  <option value="" disabled selected>Select User Type</option>
+                  <option value="student">Student</option>
+                  <option value="teacher">Teacher</option>
+                  <option value="admin">Admin</option>
+              </select>
+          </div>
+          <div class="input-group">
+              <label for="emailForget">Enter Email</label>
+              <input type="email" id="emailForget" name="email" placeholder="Enter your registered email" required>
+          </div>
+          <button type="submit">Send Password to Email</button>
+          <button type="button" onclick="closeForgetForm()">Cancel</button>
+      </form>
+  </div>
+
+  <script>
+    async function handleLogin() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const userType = document.getElementById("user-type").value;
+
+      if (!email || !password || !userType) {
+        alert("Please fill out all fields.");
+        return;
+      }
+      try {
+        const response = await fetch("http://localhost:3000/login", { 
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          
+          body: JSON.stringify({ email, password, userType }),
+        });
+
+        const result = await response.json();
+        console.log("Server Response:", result);
+
+        if (response.ok) {
+          localStorage.setItem("email", email);
+          localStorage.setItem("userType", userType);
+          if (userType === "student") {
+            window.location.href = "stdnts.html";
+          } else if (userType === "teacher") {
+            window.location.href = "teacher.html";
+          } else if (userType === "admin") {
+            window.location.href = "admin.html";
+          }
+        } else {
+          alert(result.message || "Login failed!");
+        }
+      } catch (error) {
+        console.error("Error logging in:", error);
+        alert("Something went wrong. Please try again.");
+      }
+    }
+    function openForgetForm() {
+            document.getElementById('forgetForm').style.display = 'block';
+            document.getElementById('backdrop').style.display = 'block';
+        }
+        function closeForgetForm() {
+            document.getElementById('forgetForm').style.display = 'none';
+            document.getElementById('backdrop').style.display = 'none';
+        }
+  </script>
+</body>
+</html>

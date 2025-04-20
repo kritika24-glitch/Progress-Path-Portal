@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Portal - Study Materials</title>
+  <link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="study.css" />
+  <style>
+    .upload-status {
+      margin: 10px 20px;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      display: none;
+      text-align: center;
+    }
+    .upload-status.success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .upload-status.error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+  </style>
+</head>
+<body>
+  <div id="uploadStatus" class="upload-status"></div>
+    <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="header-info">
+      <header class="portal-heading">
+        <i class="fa fa-user-graduate"></i>
+        <span>Student Portal</span>
+      </header>
+      <div class="info">
+        <h2 id="studentName">Student Name</h2>
+        <p>Section: <span id="studentSection"></span></p>
+        <p>Branch: <span id="studentBranch"></span></p>
+        <p>Email: <span id="studentEmail"></span></p>
+        <p>Roll Number: <span id="studentRoll"></span></p>
+      </div>
+    </div>
+    <nav>
+      <a href="stdnts.html"><i class="fa-solid fa-house"></i> Dashboard</a>
+      <a href="acad.html"><i class="fa-solid fa-book-open"></i> Academic Record</a>
+      <a href="study.html"><i class="fa-solid fa-file"></i> Study Material</a>
+      <a href="index.html" id="signout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out</a>
+    </nav>
+  </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <header>
+        <h1>Assignments</h1>
+      </header>
+
+      <!-- Assignments Section -->
+      <section class="recent-materials">
+        <div class="section-header">
+          <h2> Posted Assignments</h2>
+        </div>
+        <ul class="material-list" id="allrecentAssignments">
+          <!-- Dynamic Data Injected Here -->
+        </ul>
+        </div>
+      </section>
+    </div>
+  
+
+  <script>
+     let studentDetails = {}; 
+    document.addEventListener('DOMContentLoaded', function() {
+      const email = localStorage.getItem("email");
+    if (!email) {
+        // No email means user is not logged in, redirect to index
+        window.location = "index.html";
+
+        return;
+    }
+    console.log(localStorage.getItem("email"))
+    
+    // Add event listener to sign out button
+    const signoutButton = document.getElementById("signout");
+    if (signoutButton) {
+        signoutButton.addEventListener("click", function() {
+            localStorage.clear(); // Clear all local storage
+            window.location.replace("index.html");
+            console.log(localStorage.getItem("email"))
+            // No need for reload after replace
+        });
+    } else {
+        console.error("Sign out button not found!");
+    }
+      fetch('http://localhost:3000/studentstudy')
+        .then(response => response.json())
+        .then(data => {
+          // **Sidebar Student Details**
+          const student = data.student;
+          // document.getElementById('studentID').textContent = student.student_id;
+          document.getElementById('studentName').textContent = student.name;
+          document.getElementById('studentSection').textContent = student.section;
+          document.getElementById('studentBranch').textContent = student.branch;
+          document.getElementById('studentEmail').textContent = student.email;
+          document.getElementById('studentRoll').textContent = student.roll_number;
+         
+          studentDetails = {
+            student_id: student.student_id,
+            section: student.section,
+            course: student.course,
+            Semester: student.current_semester
+          };
+
+          // **Recent Assignments**
+          const allrecentAssignmentsList = document.getElementById('allrecentAssignments');
+          allrecentAssignmentsList.innerHTML = ""; // Clear previous data
+          data.allrecentAssignments.forEach(assignment => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+              <div class="file-info">
+                <h3>${assignment.title}</h3>
+                 
+                <p>📅 Due Date: ${assignment.due_date ? new Date(assignment.due_date).toISOString().slice(0, 10) : 'N/A'}</p>
+                <p>👨‍🏫 Teacher: ${assignment .teacher_name}</p>
+        <p>📚 Subject ID: ${assignment.subject_id}</p>
+        <p>📅 Uploaded Date: ${new Date(assignment.uploaded_date).toISOString().slice(0, 10)}</p>
+              </div>
+              <div class="actions">
+                <button class="view-btn" onclick="viewFile('${assignment.file_path}')"><i class="fa-solid fa-eye"></i></button>
+                 <button class="upload-btn" title="Upload Assignment" 
+  onclick="uploadAssignment('${studentDetails.student_id}', '${assignment.subject_id}', '${assignment.teacher_id}', '${assignment.assignment_id}', '${studentDetails.Semester}', '${studentDetails.section}', '${studentDetails.course}', '${assignment.due_date}')">
+  <i class="fa-solid fa-arrow-up-from-bracket"></i>
+</button>
+
+
+              </div>
+            `;
+            allrecentAssignmentsList.appendChild(li);
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching study data:', error);
+        });
+    });
+
+    function viewFile(filePath) {
+      console.log("Opening file:", filePath); // Debugging
+      if (!filePath) {
+        alert("File not found!");
+        return;
+      }
+      window.open(filePath, "_blank");
+    }
+    function uploadAssignment(student_id, subjectId, teacherId, assignmentId, semester, section, course, dueDate) {
+  const currentTime = new Date();
+  const dueDateTime = new Date(dueDate);
+  dueDateTime.setHours(23, 59, 59, 999); // Allow till 11:59 PM of the due date
+
+  if (currentTime > dueDateTime) {
+    alert("The deadline to upload this assignment has passed!");
+    return;
+  }
+ 
+  // File picker
+  const fileInput = document.createElement("input");
+  fileInput.type = "file";
+  fileInput.accept = "*/*";
+  fileInput.click();
+
+  fileInput.onchange = () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("student_id", student_id);
+    formData.append("subject_id", subjectId);
+    formData.append("teacher_id", teacherId);
+    formData.append("assignment_id", assignmentId);
+    formData.append("Semester", semester);
+    formData.append("section", section);
+    formData.append("course", course);
+
+    fetch("http://localhost:3000/uploadStudentAssignment", {
+      method: "POST",
+      body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+      showUploadStatus("✅ " + data.message, true);
+      //alert(data.message);
+    })
+    .catch(err => {
+      console.error("Upload failed:", err);
+      showUploadStatus("❌ Failed to upload assignment.", false);
+      //alert("Failed to upload assignment.");
+    });
+  };
+}
+
+function showUploadStatus(message, isSuccess) {
+      const statusDiv = document.getElementById("uploadStatus");
+      statusDiv.className = "upload-status " + (isSuccess ? "success" : "error");
+      statusDiv.textContent = message;
+      statusDiv.style.display = "block";
+      setTimeout(() => {
+        statusDiv.style.display = "none";
+      }, 5000);
+    }
+    function downloadFile(filePath) {
+      if (!filePath) {
+        alert("File not available!");
+        return;
+      }
+      window.location.href = '/download?file=' + encodeURIComponent(filePath);
+    }
+  </script>
+</body>
+</html>

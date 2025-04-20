@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+    <link rel="stylesheet" href="acad.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="header-info">
+            <header class="portal-heading">
+              <i class="fa fa-user-graduate"></i>
+              <span>Student Portal</span>
+            </header>
+            <div class="info">
+              <h2 id="student-name">Student Name</h2>
+              <p>Section: <span id="student-section"></span></p>
+              <p>Branch: <span id="student-branch"></span></p>
+              <p>Email: <span id="student-email"></span></p>
+              <p>Roll Number: <span id="student-roll-number"></span></p>
+            </div>
+          </div>
+          <nav>
+            <a href="stdnts.html"><i class="fa-solid fa-house"></i> Dashboard</a>
+            <a href="acad.html"
+              ><i class="fa-solid fa-book-open"></i> Academic Record</a>
+            <a href="study.html"><i class="fa-solid fa-file"></i> Study Material</a>
+            <a href="index.html" id="signout"
+              ><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out</a>
+          </nav>
+    </div>
+
+        <div class="main-content">
+            <header>
+                <h1>Academic Records</h1>
+            </header>
+
+            <div class="stats">
+                <div class="stat1">
+                    <h2>Credit Points</h2>
+                    <p id="credit-points">0</p>
+                </div>
+                <div class="stat2">
+                    <h2>Current Subjects</h2>
+                    <p id="current-courses">0</p>
+                </div>
+            </div>
+
+            <section class="content">
+                <h2>Current Subjects</h2>
+                <table id="courses-table">
+                    <thead>
+                        <tr>
+                            <th>subject_id</th>
+                            <th>subject_name</th>
+                            <th>credit_point</th>
+                            <th>teacher_name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dynamically populated with JavaScript -->
+                    </tbody>
+                </table>
+
+                <h2>Subject Marks</h2>
+
+                <table id="marks-table">
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Subject-Name</th>
+                            <th>Periodical 1</th>
+                            <th>Assignment 1</th>
+                            <th>Periodical 2</th>
+                            <th>Assignment 2</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dynamically populated with JavaScript -->
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </div>
+
+    <script>
+         document.addEventListener("DOMContentLoaded", function () {
+        const email = localStorage.getItem("email");
+    if (!email) {
+        // No email means user is not logged in, redirect to index
+        window.location = "index.html";
+
+        return;
+    }
+    console.log(localStorage.getItem("email"))
+    
+    // Add event listener to sign out button
+    const signoutButton = document.getElementById("signout");
+    if (signoutButton) {
+        signoutButton.addEventListener("click", function() {
+            localStorage.clear(); // Clear all local storage
+            window.location.replace("index.html");
+            console.log(localStorage.getItem("email"))
+            // No need for reload after replace
+        });
+    } else {
+        console.error("Sign out button not found!");
+    }
+        // Fetch data from the API and update the HTML content
+        fetch('http:///localhost:3000/acad')
+            .then(response => response.json())
+            .then(data => {
+                // Update student details
+                document.getElementById('student-name').textContent = data.student.name;
+                document.getElementById('student-section').textContent = data.student.section;
+                document.getElementById('student-branch').textContent = data.student.branch;
+                document.getElementById('student-email').textContent = data.student.email;
+                document.getElementById('student-roll-number').textContent = data.student.roll_number;
+
+                // Update credit points
+                document.getElementById('credit-points').textContent = data.credit_points;
+
+                // Update current courses count
+                document.getElementById('current-courses').textContent = data.courseCount;
+
+                // Populate the courses table
+                const coursesTableBody = document.getElementById('courses-table').getElementsByTagName('tbody')[0];
+                data.courses.forEach(course => {
+                    const row = coursesTableBody.insertRow();
+                    row.innerHTML = `
+                        <td>${course.subject_id}</td>
+                        <td>${course.subject_name}</td>
+                        <td>${course.credit_point}</td>
+                        <td>${course.teacher_name}</td>
+                    `;
+                });
+
+                // Populate the marks table
+                const marksTableBody = document.getElementById('marks-table').getElementsByTagName('tbody')[0];
+                data.marks.forEach((mark, index) => {
+                    const row = marksTableBody.insertRow();
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${mark.subject_id}</td>
+                        <td>${mark.periodical_1}</td>
+                        <td>${mark.assignment_1}</td>
+                        <td>${mark.periodical_2}</td>
+                        <td>${mark.assignment_2}</td>
+                    `;
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+        });
+    </script>
+</body>
+</html>

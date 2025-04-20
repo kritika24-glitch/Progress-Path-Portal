@@ -1,0 +1,192 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+body {
+  font-family: "Poppins", sans-serif;
+  margin: 0;
+  display: flex;
+  height: 100vh;
+  background-color: #f4f4f4;
+}
+
+/* Sidebar Styling */
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 300px;
+  background: linear-gradient(135deg, #1a1a2e, #0f3460);
+  color: white;
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.header-info {
+  /* Container for header and student info */
+  margin-bottom: 20px;
+}
+
+.portal-heading {
+  display: flex;
+  align-items: center;
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.portal-heading i {
+  margin-right: 10px;
+  font-size: 16px;
+  color: #f1c40f; /* Gold color for icon */
+  border: 2px solid #f1c40f; /* Gold ring */
+  border-radius: 50%;
+  padding: 5px;
+}
+
+.info h2 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #ccc;
+}
+
+.info p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #ccc;
+}
+
+.sidebar nav a {
+  display: block;
+  padding: 10px 8px;
+  margin: 10px 0;
+  border-radius: 5px;
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  transition: background 0.3s;
+}
+
+.sidebar nav a i {
+  margin-right: 10px;
+  color: #f1c40f;
+  width: 12px;
+  text-align: center;
+}
+
+.sidebar nav a:hover {
+  background: rgb(201, 200, 200, 0.1);
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  font-size: 25px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* Header Icons */
+.dashboard-header-icons {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+}
+
+/* Individual Icons */
+.dashboard-header-icons a i {
+  font-size: 22px;
+  color: #07090b;
+  cursor: pointer;
+}
+
+/* Main Content */
+.main-content {
+  margin-left: 320px; /* Sidebar width (300px) + gap (20px) */
+  padding: 20px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.main-content h1 {
+  color: #2c3e50;
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  margin-top: 2px;
+}
+
+.add-class-btn {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.add-class-btn:hover {
+    background-color: #0056b3;
+}
+
+.search-bar {
+    margin-bottom: 20px;
+}
+
+.search-bar input {
+    width: 30%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+/* Class List */
+.class-list h2 {
+    margin-bottom: 15px;
+}
+
+.class-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: #fff;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.class-info {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+}
+
+.class-info .icon {
+    font-size: 24px;
+    margin-right: 10px;
+}
+.class-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between Open button and 3-dots */
+}
+
+.class-actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    margin-left: 10px;
+}
+
+h1, h2, h3 {
+    color: #1c2541;
+  }

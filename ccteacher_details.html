@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h2 {
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        .error {
+            color: red;
+            text-align: center;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Teacher Details</h2>
+    <p id="subjectName"></p>
+    <table>
+        <thead>
+            <tr>
+                <th>Teacher Name</th>
+                <th>Email</th>
+                <th>Section</th>
+                <th>Semester</th>
+                <th>Current Year</th>
+                <th>Total Students</th>
+            </tr>
+        </thead>
+        <tbody id="teacherTable">
+            <!-- Data will be inserted here -->
+        </tbody>
+    </table>
+
+    <script>
+        // Function to get query parameters from URL
+        function getQueryParam(param) {
+            let urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let subjectID = getQueryParam("subject_id");
+
+            if (!subjectID) {
+                document.body.innerHTML = "<p class='error'>Invalid Subject ID</p>";
+                return;
+            }
+
+            fetch(`http://localhost:3000/getSubjectTeachers?subject_id=${subjectID}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        document.body.innerHTML = `<p class='error'>${data.error}</p>`;
+                        return;
+                    }
+
+                    let teacherTable = document.getElementById("teacherTable");
+
+                    if (data.length === 0) {
+                        teacherTable.innerHTML = "<tr><td colspan='6' class='error'>No teachers found</td></tr>";
+                        return;
+                    }
+
+                    data.forEach(teacher => {
+                        let row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${teacher.teacher_name}</td>
+                            <td>${teacher.email}</td>
+                            <td>${teacher.section_name}</td>
+                            <td>${teacher.semester}</td>
+                            <td>${teacher.current_year}</td>
+                            <td>${teacher.total_students}</td>
+                        `;
+                        teacherTable.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error("Error fetching teachers:", error);
+                    document.body.innerHTML = "<p class='error'>Failed to load data</p>";
+                });
+        });
+    </script>
+
+</body>
+</html>

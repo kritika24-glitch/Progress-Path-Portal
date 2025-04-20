@@ -1,0 +1,252 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+body {
+  font-family: "Poppins", sans-serif;
+  margin: 0;
+  display: flex;
+  height: 100vh;
+  background-color: #f4f4f4;
+}
+
+/* Sidebar Styling */
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 300px;
+  background: linear-gradient(135deg, #1a1a2e, #0f3460);
+  color: white;
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.header-info {
+  /* Container for header and student info */
+  margin-bottom: 20px;
+}
+
+.portal-heading {
+  display: flex;
+  align-items: center;
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.portal-heading i {
+  margin-right: 10px;
+  font-size: 16px;
+  color: #f1c40f; /* Gold color for icon */
+  border: 2px solid #f1c40f; /* Gold ring */
+  border-radius: 50%;
+  padding: 5px;
+}
+
+.info h2 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #ccc;
+}
+
+.info p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #ccc;
+}
+
+.sidebar nav a {
+  display: block;
+  padding: 10px 8px;
+  margin: 10px 0;
+  border-radius: 5px;
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  transition: background 0.3s;
+}
+
+.sidebar nav a i {
+  margin-right: 10px;
+  color: #f1c40f;
+  width: 12px;
+  text-align: center;
+}
+
+.sidebar nav a:hover {
+  background: rgb(201, 200, 200, 0.1);
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  font-size: 25px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* Header Icons */
+.dashboard-header-icons {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+}
+
+/* Individual Icons */
+.dashboard-header-icons a i {
+  font-size: 22px;
+  color: #07090b;
+  cursor: pointer;
+}
+
+/* Main Content */
+.main-content {
+  margin-left: 320px; /* Sidebar width (300px) + gap (20px) */
+  padding: 20px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.main-content h1 {
+  color: #2c3e50;
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  margin-top: 2px;
+}
+
+.main-content a {
+  color: #07090b;
+  font-weight: 600;
+}
+
+.search-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.search-container button i {
+padding: 2px;
+}
+.search-filters input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 400px;
+}
+
+.add-course-btn {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  position: absolute;
+  top: -50px; /* Button ko upar shift karne ke liye */
+  right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.course-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.course-card {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  position: relative;
+}
+
+/* Improved Styling for Add New Subject Form */
+
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 80px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 200px; /* Fixing width to avoid stretching */
+  max-width: 40%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.modal-content h2 {
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+
+.modal-content input {
+  width: 70%; /* Fixing the dropdown width issue */
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+.modal-content label {
+  display: block;
+  margin-top: 10px;
+  text-align: left;
+}
+.modal-content select {
+  width: 50%; /* Fixing the dropdown width issue */
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+.modal-content button {
+  width: 20%;
+  background: #2c3e50;
+  color: #dcdde1;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+button:hover {
+  background: #1f2531;
+}
+
+.modal-content button:hover {
+  background: #1f2531;
+}
+.close {
+  position: absolute;
+  top: 10px;
+  right: 470px;
+  font-size: 20px;
+  cursor: pointer;
+}

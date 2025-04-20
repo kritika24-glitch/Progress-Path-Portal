@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications</title>
+    <link rel="stylesheet" href="stt.css">
+</head>
+
+<body>
+    <div class="main-content">
+        <h1>Notifications</h1>
+        <ul id="notifications-list"></ul>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch(`http://localhost:3000/student/notifications`)  // backend se notifications laayenge
+                .then(response => response.json())
+                .then(data => {
+                    let list = document.getElementById("notifications-list");
+                    list.innerHTML = "";
+
+                    if (!data || data.length === 0) {
+                        list.innerHTML = "<p>No notifications available.</p>";
+                        return;
+                    }
+
+                    data.forEach(notification => {
+                        let item = document.createElement("li");
+                        item.innerHTML = `
+                            Message: ${notification.message} <br>
+                            Date: ${new Date(notification.timestamp).toLocaleDateString()}
+                        `;
+                        list.appendChild(item);
+                    });
+                })
+                .catch(err => console.error("Error fetching notifications", err));
+        });
+    </script>
+</body>
+</html>

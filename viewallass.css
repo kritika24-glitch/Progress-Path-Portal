@@ -1,0 +1,136 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    overflow-x: hidden;
+    background-color: #ecf0f1;
+
+}
+
+.container {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+.sidebar {
+    background-color: #39507a;
+    color: white;
+    padding: 20px;
+    width: 250px;
+    position: fixed; /* Makes the sidebar fixed to the viewport */
+    top: 0; /* Ensures it starts at the top */
+    left: 0;
+    height: 100vh;
+}
+
+
+.sidebar h2 {
+    font-size: 25px;
+    margin-bottom: 10px;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.sidebar p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.sidebar a {
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+
+.sidebar a:hover {
+    background-color: #b1cdec;
+}
+
+.sidebar a i {
+    margin-right: 10px;
+}
+  
+.main-content {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: #ecf0f1;
+    overflow-y: auto;
+    margin-left: 279px;
+    min-height: 100vh;
+}
+  
+  .section {
+    margin-bottom: 30px;
+    min-height: 100vh;
+  }
+  
+  .section h2 {
+    margin-bottom: 10px;
+  }
+  
+  .file-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .file-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #fff;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .file-list li div {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .file-actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .file-actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    position: relative;
+    color: #555;
+    transition: color 0.3s ease;
+  }
+  
+  .file-actions button:hover {
+    color: #1e90ff;
+  }
+  
+  /* Tooltip Styling */
+  .file-actions button::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: white;
+    padding: 5px 8px;
+    font-size: 12px;
+    border-radius: 5px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, top 0.3s ease;
+  }
+  
+  .file-actions button:hover::after {
+    opacity: 1;
+    top: -30px;
+  }
+  
